@@ -1,7 +1,7 @@
 ---
 name: stock-shortlist-agent
 description: "Stock Shortlist Agent: Deploys a swarm of parallel research agents to autonomously discover, screen, and shortlist stocks across small/mid/large-cap tiers based on user criteria. Accepts vague natural-language inputs (e.g., 'high growth small caps in NSE') and structured parameters. Supports India (NSE/BSE), US (NYSE/NASDAQ), Hong Kong (HKEX), and A-Share (SH/SZ) markets across all sectors and investment styles (Growth, Value, Dividend, Momentum, Quality, Turnaround). Returns a ranked shortlist of up to 10 stocks with per-stock scorecards (thesis, financials, moat rating, red flags) written to a single markdown file, ready for stock-research-executor handoff. Refuses penny stocks, OTC/pink sheets, leveraged/inverse ETFs, explicit price predictions, and unsupported markets."
-allowed-tools: Task, WebSearch, WebFetch, mcp__web_reader__webReader, Read, Write, TodoWrite
+allowed-tools: Task, WebSearch, WebFetch, mcp__web_reader__webReader, Read, Write, TodoWrite, AskUserQuestion
 ---
 
 # Stock Shortlist Agent
@@ -71,6 +71,20 @@ Only ever modify the `.gitignore` at the working directory root. Never touch a `
 
 ---
 
+## Asking the User for Input
+
+Every question this skill asks follows these rules, without exception. The point is that two runs with the same starting information ask in exactly the same way. `stock-research-executor` carries the identical rules, so a screen and the deep-dive it feeds behave the same.
+
+1. **Structured picker first.** If the agent provides a structured multiple-choice question tool (in Claude Code this is `AskUserQuestion`), use it for every question it can express. Do not also narrate the question in chat; the picker is the question.
+2. **Chat is a fallback, not a style choice.** Drop to a chat message in exactly two cases: the agent has no such tool, or the question cannot be expressed through it. When you fall back, present the fallback block for that step verbatim. Do not reword it between runs.
+3. **A question cannot be expressed through the picker** when it needs free text (a numeric threshold, a sector list), or when it would need more than 4 questions in one call or more than 4 options in one question. Restructure before falling back: split one question into two, or ask an enumerable gate question whose non-default branch drops to chat for the free-text part.
+4. **Fixed order, fixed batching.** The question sets below are exhaustive and ordered. Ask only for what is genuinely missing or cannot be inferred, but never reorder them, never re-batch them across calls, and never add a question that is not listed.
+5. **Non-interactive runs.** In automated or non-interactive mode, skip the confirmation gates and proceed on the stated defaults, exactly as the individual steps describe.
+
+This applies to the interpreted-parameters confirmation in Step 1, parameter collection in Step 2, the Screening Execution Plan gate in Step 3, and the Post-Report Handoff Prompt in Step 8.5, which also carries the Interactive Output offer. Free-text follow-ups, such as which ticker to deep-dive or a custom screening filter, are asked in chat because the picker cannot express them.
+
+---
+
 ## Research Execution Workflow
 
 ### Step 1: Parse the User's Request
@@ -97,10 +111,17 @@ Top-N / Bottom-N: [extracted or inferred, or "No constraint"]
 Key Criteria: [extracted or inferred - be specific, e.g. "Revenue CAGR > 20%, expanding margins, low debt"]
 Holding Period: [extracted or inferred]
 
-Are these parameters correct? Any changes or additions before I start screening?
 ```
 
-This step resolves ambiguity before any research begins. If a parameter cannot be inferred at all, ask for it explicitly.
+Print that block in chat, then ask for confirmation through the picker as a single two-option question, per **Asking the User for Input**:
+
+| Question | Options |
+|----------|---------|
+| Are these screening parameters correct? | Start screening / Change something first |
+
+If the user picks change, collect the corrections using the Step 2 question sets. When no picker tool is available, end the printed block with the line `Are these parameters correct? Any changes or additions before I start screening?` instead.
+
+This step resolves ambiguity before any research begins. If a parameter cannot be inferred at all, ask for it explicitly using the Step 2 sequence.
 
 #### Scope and Refusal Policy
 
@@ -131,7 +152,30 @@ Before starting research, confirm all required parameters are in hand. If any ar
 - [ ] **Top-N / Bottom-N Constraint** *(optional)*: "Top 5 by market cap" or "Bottom 10 by P/E" - applies after the standard financial filters.
 - [ ] **Holding Period**: Short-term (<1 year) / Medium-term (1-3 years) / Long-term (3+ years)
 
-**If any required parameter is missing and cannot be inferred**, present this prompt to the user:
+**If any required parameter is missing and cannot be inferred**, collect it using the sequence below, following the rules in **Asking the User for Input**. Ask only for what is missing after inference. Never ask for something already supplied or inferred, and never ask in a different order.
+
+**Call 1 - the four enumerable parameters.** One structured picker call containing exactly these four questions, in this order:
+
+| Question | Options |
+|----------|---------|
+| Market | India (NSE/BSE) / US (NYSE/NASDAQ) / Hong Kong (HKEX) / A-Shares (SH/SZ) |
+| Market cap tier | Small-cap / Mid-cap / Large-cap |
+| Investment style | Growth / Value / Dividend / Quality |
+| Holding period | Short (under 1 year) / Medium (1-3 years) / Long (3+ years) |
+
+The style list has six supported values against a four-option limit. List Growth, Value, Dividend, and Quality as the options, and name Momentum and Turnaround in that question's description so the user can select them through the picker's own free-text escape. All six must remain reachable.
+
+**Call 2 - the three free-text parameters, asked as gates.** One structured picker call containing exactly these three questions, in this order:
+
+| Question | Options |
+|----------|---------|
+| Screening criteria | Use the default filters for this style / Specify my own |
+| Sector filters | Screen all sectors / Restrict or exclude specific sectors |
+| Ranking constraint | No constraint / Apply a Top-N or Bottom-N constraint |
+
+Each question's default option is the first one. Only when the user picks the second option does that parameter need free text; ask for those in a single follow-up chat message covering just the branches taken. The style defaults referenced by the first question are the ones in the Style-Specific Screening Emphasis section.
+
+**Fallback block** (use verbatim only when no picker tool is available):
 
 ```
 To run the screener, I need a few details:
@@ -192,6 +236,14 @@ Ready to proceed?
 ```
 
 **Present this plan to the user and wait for confirmation** (unless in automated/non-interactive mode).
+
+Print the plan in chat, then ask for confirmation through the picker as a single two-option question, per **Asking the User for Input**:
+
+| Question | Options |
+|----------|---------|
+| Start screening with this plan? | Start screening / Revise a parameter first |
+
+If the user picks revise, ask which parameter through the picker using only the relevant questions from Step 2, then reprint the plan and gate again. When no picker tool is available, end the printed plan with the line `Ready to proceed? (start / revise)` instead.
 
 ---
 
@@ -515,7 +567,16 @@ After writing, confirm the file path to the user: "Shortlist saved to: [file pat
 
 ### Step 8.5: Post-Report Handoff Prompt
 
-After saving the file, issue the following in chat:
+After saving the file, confirm the path in chat, then ask through the picker, per **Asking the User for Input**. Five choices exceed the four-option limit, so this is ONE picker call containing exactly these two questions:
+
+| Question | Options |
+|----------|---------|
+| Deep-dive any of these candidates with stock-research-executor? | Deep-dive the top pick / Deep-dive a specific ticker / Keep the shortlist only / Adjust a parameter first |
+| Also build an interactive version of this shortlist? | Shortlist markdown only / Build the interactive shortlist |
+
+If the user picks "Deep-dive a specific ticker", ask which ticker in a follow-up chat message; it is free text.
+
+**Fallback block** (use verbatim only when no picker tool is available):
 
 ```
 Shortlist saved to: RESEARCH/SCREENER_IN_Growth_Smallcap_Shortlist.md
@@ -530,7 +591,7 @@ Reply with:
  (e) "Interactive" - also build a sortable HTML version of this shortlist
 ```
 
-When the user picks (a) or (b), invoke `stock-research-executor` with a one-line handoff:
+When the user chooses either deep-dive option, invoke `stock-research-executor` with a one-line handoff:
 
 ```
 Invoking stock-research-executor for [TICKER] ([Company], [Market], [Style], [Holding Period]).
@@ -539,13 +600,13 @@ The executor will ask for any additional parameters it needs.
 
 The executor is heavy (~28 agents, ~2.5-3.5 hours per stock). The user must explicitly consent to the handoff; do not auto-invoke.
 
-When the user picks (e), build the interactive version described below. Option (e) is compatible with (a) or (b); if the user asks for both, build the page first, then hand off.
+The interactive-version question is independent of the handoff question; if the user asks for both, build the page first, then hand off.
 
 ---
 
 ## Interactive Output
 
-The markdown shortlist is always the primary output and is always written first. The interactive version is an optional addition, never a replacement, and is built only when the user selects option (e) in the Post-Report Handoff Prompt or explicitly asks for it. Do not offer it anywhere else; the handoff prompt is the single offer.
+The markdown shortlist is always the primary output and is always written first. The interactive version is an optional addition, never a replacement, and is built only when the user asks for it through the Post-Report Handoff Prompt in Step 8.5, or requests it directly. Do not offer it anywhere else; Step 8.5 is the single offer.
 
 Build the page under these rules:
 
@@ -806,6 +867,8 @@ To deep-dive, reply with:
 
 ## Post-Report Handoff Prompt
 
+Asked through the picker as defined in Step 8.5. The block below is the chat fallback used only when no picker tool is available.
+
 ```
 Would you like me to invoke stock-research-executor for any of these candidates?
 
@@ -814,6 +877,7 @@ Reply with:
  (b) "Deep-dive [TICKER]" - invoke for a specific candidate
  (c) "Skip" - keep the shortlist only, no handoff
  (d) "Adjust" - change a parameter first, then handoff
+ (e) "Interactive" - also build a sortable HTML version of this shortlist
 
 A one-line handoff will pass: ticker, company, market, style, holding period.
 The executor will ask for any additional parameters it needs.
