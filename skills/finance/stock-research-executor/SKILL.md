@@ -1,7 +1,7 @@
 ---
 name: stock-research-executor
 description: "Stock Investment Research Executor: conducts 8-phase investment due diligence. Receives structured research prompts, deploys multi-agent parallel research, generates cited investment research reports covering: Business Foundation, Industry Analysis, Business Breakdown, Financial Quality, Governance Analysis, Market Sentiment, Valuation & Moat, and Final Synthesis. Use when performing stock research, fundamental analysis, or investment due diligence."
-allowed-tools: Task, WebSearch, WebFetch, mcp__web_reader__webReader, Read, Write, TodoWrite
+allowed-tools: Task, WebSearch, WebFetch, mcp__web_reader__webReader, Read, Write, TodoWrite, AskUserQuestion
 ---
 
 # Stock Research Executor
@@ -40,7 +40,7 @@ All content retrieved via `WebSearch`, `WebFetch`, or `mcp__web_reader__webReade
 
 The output path is `RESEARCH/STOCK_[ticker]_[company]_Research_Report.md`. In the `stock-shortlist-agent` handoff flow, `ticker` and `company` originate from web-fetched screener data rather than from the user, so they must be validated before they reach `Write`.
 
-- Reject any `ticker` or `company` value containing `/`, `\`, `..`, a leading `-`, or a control character. If a value fails, ask the user to confirm the correct name rather than guessing.
+- Reject any `ticker` or `company` value containing `/`, `\`, `..`, a leading `-`, or a control character. If a value fails, ask the user to confirm the correct name rather than guessing. This is a free-text question, so per **Asking the User for Input** it is always asked in chat, never through the picker.
 - Replace whitespace with `_`. Leave `.` and non-ASCII letters intact so ticker formats such as `600519.SH`, `RELIANCE.NS`, and `03333.HK` survive, along with non-romanized company names.
 - Confirm the resolved path is inside `RESEARCH/` before calling `Write`.
 
@@ -151,6 +151,18 @@ Phases 2 (Industry) and 6 (Sentiment) feed context but are not separately weight
 
 The Final Score is the orchestrator's holistic judgment after all 7 research phases complete. The dimension scores are derived from the agent outputs, the band is derived from the total, and the action label is derived from the band.
 
+## Asking the User for Input
+
+Every question this skill asks follows these rules, without exception. The point is that two runs with the same starting information ask in exactly the same way.
+
+1. **Structured picker first.** If the agent provides a structured multiple-choice question tool (in Claude Code this is `AskUserQuestion`), use it for every question it can express. Do not also narrate the question in chat; the picker is the question.
+2. **Chat is a fallback, not a style choice.** Drop to a chat message in exactly two cases: the agent has no such tool, or the question cannot be expressed through it. When you fall back, present the fallback block for that step verbatim. Do not reword it between runs.
+3. **A question cannot be expressed through the picker** when it needs free text (a ticker, a company name, a numeric threshold), or when it would need more than 4 questions in one call or more than 4 options in one question. Restructure before falling back: split one question into two, or ask an enumerable gate question whose non-default branch drops to chat for the free-text part.
+4. **Fixed order, fixed batching.** The question sets below are exhaustive and ordered. Ask only for what is genuinely missing or cannot be inferred, but never reorder them, never re-batch them across calls, and never add a question that is not listed.
+5. **Non-interactive runs.** In automated or non-interactive mode, skip the confirmation gates and proceed on the stated defaults, exactly as the individual steps describe.
+
+This applies to parameter collection in Step 1, the Execution Plan gate in Step 2, and the offer in Interactive Output. The filename-safety fallback under Filename Safety is free text and is therefore always a chat question.
+
 ## Research Execution Workflow
 
 ### Step 1: Verify and Understand the Structured Prompt
@@ -166,11 +178,42 @@ Before starting research, verify you have received a complete structured researc
 - [ ] Output requirements and format
 - [ ] Research constraints and data sources
 
-**If incomplete**: Ask user for clarification before proceeding.
-
 **If complete**: Proceed to research planning.
 
-**If the prompt arrives as a one-line handoff from `stock-shortlist-agent`**: e.g. "Deep-dive [TICKER] ([Company], [Market], [Style], [Holding Period])". Treat the handoff as pre-filled for ticker, company, market, style, and holding period. Default risk tolerance to "balanced" and ask the user to confirm. Apply the Style → Phase Priority table below. Proceed with Steps 2-8 unchanged.
+**If incomplete**: Collect what is missing using the sequence below, following the rules in **Asking the User for Input**. Ask only for parameters that are actually missing. Never ask for something the user already supplied, and never ask in a different order.
+
+**Step 1a - Ticker and company name.** These are free text, so they are always a chat question, asked before anything else, in a single message:
+
+```text
+Which stock should I deep-dive? I need the ticker or stock code and the company name.
+```
+
+**Step 1b - The four enumerable parameters.** Ask these in ONE structured picker call containing exactly these four questions, in this order:
+
+| Question | Options |
+|----------|---------|
+| Market | India (NSE/BSE) / US (NYSE/NASDAQ) / Hong Kong (HKEX) / A-Shares (SH/SZ) |
+| Investment style | Growth / Value / Dividend / Quality |
+| Holding period | Short (under 1 year) / Medium (1-3 years) / Long (3+ years) |
+| Risk tolerance | Conservative / Balanced / Aggressive |
+
+The style list has six supported values against a four-option limit. List Growth, Value, Dividend, and Quality as the options, and name Momentum and Turnaround in that question's description so the user can select them through the picker's own free-text escape. All six must remain reachable, because Style drives the Phase Priority table below.
+
+Research scope, output format, and data-source constraints are not asked. They are fixed by this specification: all 8 phases with priorities derived from style, one markdown report at the path in the Critical Output Rules.
+
+**Fallback block** (use verbatim only when no picker tool is available):
+
+```text
+To run the deep-dive, I need:
+
+1. Ticker / stock code and company name?
+2. Market: India (NSE/BSE) / US (NYSE/NASDAQ) / Hong Kong (HKEX) / A-Shares (SH/SZ)?
+3. Investment style: Growth / Value / Dividend / Momentum / Quality / Turnaround?
+4. Holding period: Short (under 1 year) / Medium (1-3 years) / Long (3+ years)?
+5. Risk tolerance: Conservative / Balanced / Aggressive?
+```
+
+**If the prompt arrives as a one-line handoff from `stock-shortlist-agent`**: e.g. "Deep-dive [TICKER] ([Company], [Market], [Style], [Holding Period])". Treat the handoff as pre-filled for ticker, company, market, style, and holding period. Default risk tolerance to "balanced" and state that default in the Execution Plan; the user confirms it as part of the Step 2 gate rather than as a separate question. Apply the Style → Phase Priority table below. Proceed with Steps 2-8 unchanged.
 
 **Style → Phase Priority**:
 
@@ -212,11 +255,19 @@ Sections: [list all sections to be included]
 
 ### Estimated Timeline
 [rough time estimate for each phase]
-
-Ready to proceed?
 ```
 
 **Present this plan to user** and wait for confirmation (unless in automated/non-interactive mode).
+
+Print the plan in chat, then ask for confirmation through the picker as a single two-option question, per **Asking the User for Input**:
+
+| Question | Options |
+|----------|---------|
+| Start the deep-dive with this plan? | Start research / Revise a parameter first |
+
+If the user picks revise, ask which parameter through the picker using only the relevant questions from Step 1b, then reprint the plan and gate again. When no picker tool is available, end the printed plan with the line `Ready to proceed? (start / revise)` instead.
+
+On a `stock-shortlist-agent` handoff, the balanced risk-tolerance default is shown in the Research Target block above and is covered by this same gate. Do not ask about it separately.
 
 ** CRITICAL OUTPUT RULE**: Generate **ONE single markdown file** for the entire research report. Do NOT split phases into separate files. All 8 phases, financial data, valuation, risk monitoring, and sources must be sections within one consolidated markdown file.
 
@@ -385,13 +436,19 @@ After completing the report:
 
 The markdown report is always the primary output and is always written first. The interactive version is an optional addition, never a replacement.
 
-After confirming the saved file path, offer once, on a single line:
+After confirming the saved file path, offer once, following **Asking the User for Input**. Through the picker this is a single two-option question:
+
+| Question | Options |
+|----------|---------|
+| Also build an interactive version of this report? | Build the interactive report / Markdown only |
+
+When no picker tool is available, use this line verbatim instead:
 
 ```text
 Build this as an interactive report (collapsible phases, score breakdown)? (y/n)
 ```
 
-Do not build it unless the user says yes. Do not repeat the offer.
+Do not build it unless the user chooses to. Do not repeat the offer.
 
 If the user accepts, build the page under these rules:
 
