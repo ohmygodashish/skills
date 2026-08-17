@@ -103,29 +103,3 @@ The script only ever replaces symlinks. If a destination entry is a real directo
 | :--- | :--- | :--- | :--- |
 | **`humanizer`** | Humanize AI writing style to sound natural and engaging | [`docs`](./docs/productivity/humanizer.md) | [`SKILL.md`](./skills/productivity/humanizer/SKILL.md) |
 | **`presentation-speaker`** | Format text into engaging spoken presentation style | [`docs`](./docs/productivity/presentation-speaker.md) | [`SKILL.md`](./skills/productivity/presentation-speaker/SKILL.md) |
-
----
-
-## Repository Layout
-
-```text
-.
-├── README.md
-├── .agents/
-│   └── install.md
-├── docs/
-│   ├── engineering/
-│   ├── learning/
-│   ├── career/
-│   ├── finance/
-│   └── productivity/
-├── scripts/
-│   ├── link-skills.sh
-│   └── list-skills.sh
-└── skills/
-    ├── engineering/
-    ├── learning/
-    ├── career/
-    ├── finance/
-    └── productivity/
-```
