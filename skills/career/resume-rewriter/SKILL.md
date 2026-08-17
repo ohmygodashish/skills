@@ -44,3 +44,26 @@ Missing keywords to layer in: [PASTE FROM THE RECRUITER]
 
 Experience section:
 [PASTE EXPERIENCE SECTION]
+
+## Interactive Output
+
+Never offer this. Build it only if the user explicitly asks for an interactive, HTML, or shareable version of the rewrites. The default output is the chat response and nothing else.
+
+The resume text stays in the conversation. Asking for an interactive version authorizes a file containing the experience bullets, original and rewritten, and nothing beyond them.
+
+If the user asks, build the page under these rules:
+
+- No contact details anywhere in the file: no name, no address, no phone number, no email. Refer to the candidate by role. This applies to the page title and the filename.
+- Include the experience section only. Do not carry the summary, skills, education, or any other part of the resume into the page.
+- If the agent has a tool for producing a hosted artifact or canvas, prefer it. Otherwise use the `Write` tool to produce a single `.html` file named `resume-bullet-rewrites.html` in the working directory. Report the path in one line.
+- One file only. All CSS and JavaScript inline. No CDN links, no external fonts, no remote images. It must work offline when opened from a `file://` URL.
+- No build step, no framework, no dependencies. Plain HTML, CSS, and vanilla JavaScript.
+- Readable at phone width and on desktop. Respect `prefers-color-scheme` for light and dark, and set an explicit background colour on `body` rather than relying on the browser default.
+- The page carries every rewritten bullet, not just the five highlighted ones.
+
+The page must contain:
+
+1. Every bullet as a before-and-after pair, side by side on desktop and stacked on narrow screens, grouped by role.
+2. A copy button per rewritten bullet, using the clipboard API with a plain text-selection fallback.
+3. Any `[estimate, verify before sending]` marker rendered as a visible warning on that bullet, not as inline body text. The page must make unverified numbers impossible to miss before the user pastes them into a real resume.
+4. The five highest-impact rewrites marked as such, each with its note on why the rewrite is stronger.

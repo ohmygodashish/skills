@@ -49,3 +49,25 @@ Resume:
 [PASTE RESUME]
 
 Start with question 1.
+
+## Interactive Output
+
+Never offer this. Build it only if the user explicitly asks for an interactive, HTML, or shareable version of the results, and only after the interview has finished. The default output is the chat response and nothing else.
+
+Only the final debrief goes into the file. Never write the interview transcript: not the questions, not the user's answers, not the per-answer critiques.
+
+If the user asks, build the page under these rules:
+
+- No contact details anywhere in the file: no name, no address, no phone number, no email. Refer to the candidate by role. This applies to the page title and the filename.
+- If the agent has a tool for producing a hosted artifact or canvas, prefer it. Otherwise use the `Write` tool to produce a single `.html` file named `interview-debrief.html` in the working directory. Report the path in one line.
+- One file only. All CSS and JavaScript inline. No CDN links, no external fonts, no remote images. It must work offline when opened from a `file://` URL.
+- No build step, no framework, no dependencies. Plain HTML, CSS, and vanilla JavaScript.
+- Readable at phone width and on desktop. Respect `prefers-color-scheme` for light and dark, and set an explicit background colour on `body` rather than relying on the browser default.
+- The page carries the same verdict as the chat response, at the same severity. Do not soften the feedback to fit a layout.
+
+The page must contain:
+
+1. The hireability score out of 100, shown against its band.
+2. The three weakest answers, each summarized as the gap it exposed and the specific words that lost points. Paraphrase; do not reproduce the full answer.
+3. The three questions to rehearse before the next real interview.
+4. The study plan for the gap areas, as a checklist.

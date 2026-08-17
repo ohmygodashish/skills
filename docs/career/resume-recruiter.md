@@ -13,6 +13,10 @@ You invoke this by typing `/resume-recruiter`.
 | Unsure which keywords top recruiters and job listings expect | Top 15 trending market keywords ranked by frequency and identified missing keywords in your resume |
 | Resume feels bloated with low-signal buzzwords | Buzzword removal list and top 5 ranked action items to move from screened-out to shortlist |
 
+## Interactive output
+
+On request only. The skill never offers this and never writes anything by default, because resume text is personal data that stays in the conversation. Ask for an interactive or HTML version and you get one self-contained HTML file holding the analysis: the top 15 keywords as a table filterable by present, missing, or buried, a trending-skills panel, the buzzwords to cut, and the ranked action list. It carries no name, address, phone number, or email, and does not reproduce the resume.
+
 ## Underlying Specification
 
 The full prompt specification and agent execution rules for this skill are maintained at [`skills/career/resume-recruiter/SKILL.md`](../../skills/career/resume-recruiter/SKILL.md).

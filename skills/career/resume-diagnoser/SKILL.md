@@ -35,3 +35,27 @@ Seniority: [JUNIOR / MID / SENIOR / LEAD]
 
 Resume:
 [PASTE RESUME]
+
+## Interactive Output
+
+Never offer this. Build it only if the user explicitly asks for an interactive, HTML, or shareable version of the diagnosis. The default output is the chat response and nothing else.
+
+The resume text stays in the conversation. Asking for an interactive version authorizes a file containing the diagnosis, not a file containing the resume.
+
+If the user asks, build the page under these rules:
+
+- No contact details anywhere in the file: no name, no address, no phone number, no email. Refer to the candidate by role. This applies to the page title, the filename, and any quoted line pulled from the resume.
+- Quote only the specific lines being diagnosed. Do not reproduce the full resume in the page.
+- If the agent has a tool for producing a hosted artifact or canvas, prefer it. Otherwise use the `Write` tool to produce a single `.html` file named `resume-diagnosis.html` in the working directory. Report the path in one line.
+- One file only. All CSS and JavaScript inline. No CDN links, no external fonts, no remote images. It must work offline when opened from a `file://` URL.
+- No build step, no framework, no dependencies. Plain HTML, CSS, and vanilla JavaScript.
+- Readable at phone width and on desktop. Respect `prefers-color-scheme` for light and dark, and set an explicit background colour on `body` rather than relying on the browser default.
+- The page carries the same findings as the chat response, at the same severity. Do not soften the feedback to fit a layout.
+
+The page must contain:
+
+1. The ATS-killer list, ordered by how likely each is to cause auto-rejection.
+2. Section-by-section findings for summary, experience, skills, and education, each showing the flagged line and why it fails.
+3. Missing signals for the target role.
+4. The top 5 fixes as a checklist in impact order, each expandable to its specific instruction.
+5. A before-and-after toggle on the rewritten bullet.

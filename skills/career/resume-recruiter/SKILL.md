@@ -34,3 +34,26 @@ Target companies (optional): [3 EXAMPLES OR "ANY"]
 
 Resume:
 [PASTE RESUME]
+
+## Interactive Output
+
+Never offer this. Build it only if the user explicitly asks for an interactive, HTML, or shareable version of the keyword analysis. The default output is the chat response and nothing else.
+
+The resume text stays in the conversation. Asking for an interactive version authorizes a file containing the analysis, not a file containing the resume.
+
+If the user asks, build the page under these rules:
+
+- No contact details anywhere in the file: no name, no address, no phone number, no email. Refer to the candidate by role. This applies to the page title, the filename, and any quoted line pulled from the resume.
+- Quote only the buzzwords and phrases being flagged. Do not reproduce the full resume in the page.
+- If the agent has a tool for producing a hosted artifact or canvas, prefer it. Otherwise use the `Write` tool to produce a single `.html` file named `resume-keyword-analysis.html` in the working directory. Report the path in one line.
+- One file only. All CSS and JavaScript inline. No CDN links, no external fonts, no remote images. It must work offline when opened from a `file://` URL.
+- No build step, no framework, no dependencies. Plain HTML, CSS, and vanilla JavaScript.
+- Readable at phone width and on desktop. Respect `prefers-color-scheme` for light and dark, and set an explicit background colour on `body` rather than relying on the browser default.
+- The page carries the same content as the chat response. Do not shorten or drop sections to fit a layout.
+
+The page must contain:
+
+1. The top 15 keywords as a table, ranked by frequency, filterable by present / missing / buried and by technical / soft skill / tool.
+2. A trending-skills panel for the target role, marked as the differentiation opportunity.
+3. The buzzwords-to-cut list, showing each flagged phrase as it currently appears.
+4. The ranked 5-change action list as a checklist, ordered by how fast each moves the resume from screened-out to shortlist.
