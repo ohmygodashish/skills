@@ -13,6 +13,10 @@ You invoke this by typing `/stock-shortlist-agent`.
 | Vague search prompt like 'high growth small caps in NSE' | Autonomous multi-agent screening and ranking across global markets (NSE/BSE, NYSE/NASDAQ) |
 | Filtering quality stocks from market noise | Top 10 ranked shortlist with per-stock scorecards (thesis, moat, red flags) ready for due diligence |
 
+## Interactive output
+
+The markdown shortlist under `RESEARCH/` is always the primary output. The post-report prompt adds an "Interactive" option that writes a self-contained HTML sibling next to it: the ranked table sortable by score, rank, and cap tier, filterable by moat rating, with each row expanding to its full scorecard. The file has no dependencies and works offline, and `RESEARCH/` is already gitignored, so it is not committed.
+
 ## Underlying Specification
 
 The full prompt specification and agent execution rules for this skill are maintained at [`skills/finance/stock-shortlist-agent/SKILL.md`](../../skills/finance/stock-shortlist-agent/SKILL.md).
