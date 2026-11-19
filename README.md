@@ -95,7 +95,7 @@ The script only ever replaces symlinks. If a destination entry is a real directo
 | :--- | :--- | :--- | :--- |
 | **`stock-research-executor`** | 8-phase fundamental due diligence & investment research reports | [`docs`](./docs/finance/stock-research-executor.md) | [`SKILL.md`](./skills/finance/stock-research-executor/SKILL.md) |
 | **`stock-shortlist-agent`** | Multi-agent parallel stock screening & shortlist generator | [`docs`](./docs/finance/stock-shortlist-agent.md) | [`SKILL.md`](./skills/finance/stock-shortlist-agent/SKILL.md) |
-| **`tardis-databento-indexer`** | Discover, index, and query normalized Tardis and Databento market data | [`docs`](./docs/finance/tardis-databento-indexer.md) | [`SKILL.md`](./skills/finance/tardis-databento-indexer/SKILL.md) |
+| **`tardis-datasets`** | Discover, stream, cut, and model Tardis daily gzipped CSV market data | [`docs`](./docs/finance/tardis-datasets.md) | [`SKILL.md`](./skills/finance/tardis-datasets/SKILL.md) |
 
 ---
 
