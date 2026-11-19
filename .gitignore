@@ -149,3 +149,7 @@ vite.config.ts.timestamp-*
 # Agent-generated session context. May contain absolute paths, PII, and secrets.
 .agents/handoff/
 .agents/audit/
+
+# Market data and research output
+MARKET_DATA/
+RESEARCH/

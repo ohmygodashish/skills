@@ -20,6 +20,13 @@ You invoke this by typing `/tardis-databento-indexer`.
 * **Databento Equities and Options**: Structured catalog discovery across `EQUS.MINI`, `EQUS.SUMMARY`, `OPRA.PILLAR`, and `XNAS.ITCH` schemas, strict zero-cost preflight validation, historical batch indexing, and managed live captures.
 * **Guardrails and Precision**: Enforces safe HTTP API interaction without direct SQL exposure, prevents redundant 409 re-indexing jobs, and preserves decimal precision and high-resolution timestamps.
 
+## Security and Network Requirements
+
+* **Endpoint Security**: Communicates exclusively via HTTP/HTTPS endpoints (default `http://localhost:8080`). Remote origins require authenticated transport (VPN or reverse proxy) and reject cloud metadata addresses (`169.254.169.254`).
+* **Context Protection**: Data queries intended for conversational inspection are clamped to 100 rows to prevent context window overflow; large bulk extractions up to 10,000 rows are saved directly to `MARKET_DATA/`.
+* **Zero-Cost Safeguard**: Databento operations require preflight verification to guarantee zero cost before any ingestion job is submitted.
+* **Safe Polling Cadence**: Job polling enforces a minimum 5-second interval and a 30-iteration ceiling to prevent server flooding.
+
 ## Underlying Specification
 
 The full prompt specification and agent execution rules for this skill are maintained at [`skills/finance/tardis-databento-indexer/SKILL.md`](../../skills/finance/tardis-databento-indexer/SKILL.md).
