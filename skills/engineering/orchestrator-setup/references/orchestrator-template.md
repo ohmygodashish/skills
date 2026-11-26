@@ -15,7 +15,7 @@ In a new instruction file write the orchestrator block first, a blank line, then
 ## Block (write exactly this, adapted)
 
 ```
-<!-- orchestrator-setup:begin catalog <catalog date> sha=<hash of the text strictly between the begin and end marker lines, heading included, 12 hex characters> -->
+<!-- orchestrator-setup:begin catalog <catalog date> -->
 ## Orchestrator
 
 This session is an orchestrator. It plans, delegates, reads reports and talks to the user. Agents are defined in {{AGENT_DIR}} and are generic: everything project-specific they need comes from this file. Use them as below; do not skip them or do their work inline.
@@ -58,16 +58,6 @@ Write the rows exactly as below, in plain text.
 | Checking implementer work | verifier | Always run it after an implementer finishes, before telling the user the work is done. Send any findings back to the implementer, then verify again. |
 | Derived data (feature dumps, fixtures, model outputs) | data-qa | Run it after code first produces such data, and after any change to that code. |
 | Security and data safety | security-auditor | Run it once per finished milestone, covering all changes since the last audit. Never per edit. |
-| Design before code, for tasks that span several files or have open design choices | planner | Run it before the implementer. Pass its open questions to the user; do not answer them yourself. |
-| Tests written independently of the implementation | test-writer | Give it the task and the spec, not the implementation. It must show the new tests failing for the intended reason before the implementer starts. |
-| Maintainability, conventions and simplicity of a diff | code-reviewer | Run it after the verifier passes. It does not check correctness; the verifier does. |
-| A failure whose cause is unknown | debugger | Use it before the implementer. Pass its proposed diff to the implementer; it does not apply fixes. |
-| README, API docs, examples, changelog entries, doc comments | docs-writer | Use it for documentation changes. Pass on any doc and code disagreement it flags. |
-| Adding, upgrading or auditing dependencies and lockfiles | dependency-manager | Use it for every manifest or lockfile change. Do not let the implementer add a dependency unless the instruction file allows it. |
-| Benchmarks, profiling, before and after comparisons | performance-profiler | Run it before any optimisation. No optimisation without measurements. |
-| CI configuration, build scripts, release notes, version bumps | ci-release | Use it for those files. It never pushes or publishes unless the task says to. |
-| Driving the running app or a browser to check behaviour, layout and accessibility | ui-tester | Run it after the implementer for UI changes, alongside the verifier. |
-| Schema or data migrations | migration-guardian | Run it before any migration is run or merged. Do not run a migration it has not cleared. |
 
 Custom roles: write a row from the purpose the user gave, in the same style: when to use it and the one rule that matters.
 

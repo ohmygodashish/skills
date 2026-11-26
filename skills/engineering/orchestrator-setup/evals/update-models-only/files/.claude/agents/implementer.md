@@ -3,7 +3,7 @@ name: implementer
 description: Writes and changes code, tests, scripts and fixtures in the current repo. Use it for one well-scoped implementation task with a clear definition of done.
 model: legacy-alias
 effort: high
-# orchestrator-setup catalog 2026-11-26 role=implementer sha=ac742b21e854
+# orchestrator-setup catalog 2026-11-26 role=implementer
 ---
 You implement one scoped task and report what changed.
 

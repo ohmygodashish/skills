@@ -4,7 +4,7 @@ description: Independently verifies an implementation against its task and the p
 disallowedTools: Write, Edit
 model: legacy-alias
 effort: high
-# orchestrator-setup catalog 2026-11-26 role=verifier sha=67d2ba4c1066
+# orchestrator-setup catalog 2026-05-01 role=verifier
 ---
 You check whether the work is correct and complete. You do not fix it.
 

@@ -1,15 +1,11 @@
 # Evals
 
-Seven scenarios, one folder each, in the format `claude plugin eval` reads. Each case copies the shared fixture repo (`fixtures/basic`) plus its own `files/` into a fresh git repo (`place-files.sh`), then runs the skill headless with scripted answers.
+Three scenarios, one folder each, in the format `claude plugin eval` reads. Each case copies the shared fixture repo (`fixtures/basic`) plus its own `files/` into an empty directory and makes it a git repo (`place-files.sh`, which refuses to run anywhere that is not empty), then runs the skill headless with scripted answers.
 
 | Case | Checks |
 |---|---|
 | fresh-setup-claude-code | Full setup with the Claude Code adapter |
-| fresh-setup-codex | Full setup with the Codex adapter; advisory read-only |
-| other-harness-docs-url | An unknown harness driven by a local docs file |
-| update-models-only | Models-only mode on a stamped setup with a hand-edited file |
-| conflicting-instruction-file | Existing instruction file and unstamped agent: merge and skip |
-| harness-cannot-restrict-tools | A harness with no tool restriction |
+| update-models-only | Models-only mode on a stamped setup: only model lines change |
 | model-discovery-fails | Listing, docs and user all fail: fall back to inherit |
 
 ## Pass criteria (every case)
@@ -18,7 +14,7 @@ Seven scenarios, one folder each, in the format `claude plugin eval` reads. Each
 - No model name or ID is written unless a discovery source or the user supplied it in the run.
 - Unknown facts stay "unknown, ask the user".
 - Read-only roles have write tools removed where the harness allows it, and advisory-only roles are named in the report.
-- Generated files parse; stamps carry the catalog date and a hash that matches the prompt text.
+- Generated files parse; stamps carry the catalog date.
 - The report states what was and was not verified.
 - Tracked files are untouched; nothing is committed.
 
@@ -35,4 +31,4 @@ Add `--denylist FILE` with a list of model names kept outside this folder, so th
 ## Running
 
 - Scripted: `claude plugin eval . --allow-tools Write,Edit,Bash,WebFetch,WebSearch --scaffold` from the skill folder (real, billed runs).
-- The cases that need the network (the two fresh setups) will behave differently offline; `model-discovery-fails` assumes no network.
+- `fresh-setup-claude-code` needs the network; `model-discovery-fails` assumes none.

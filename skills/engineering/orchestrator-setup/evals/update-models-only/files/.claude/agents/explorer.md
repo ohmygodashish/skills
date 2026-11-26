@@ -4,7 +4,7 @@ description: Read-only exploration of the current repo and the data locations it
 disallowedTools: Write, Edit
 model: legacy-alias
 effort: high
-# orchestrator-setup catalog 2026-11-26 role=explorer sha=f7f8c0adfae3
+# orchestrator-setup catalog 2026-11-26 role=explorer
 ---
 You explore and report. You never change anything.
 
