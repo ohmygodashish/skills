@@ -14,6 +14,7 @@ Follow `checklist.md`. Last verified: 2026-11-26. The sections marked last-known
 ### Agent files (items 1, 2)
 - Project: `.claude/agents/<name>.md`. User: `~/.claude/agents/<name>.md`. Project beats user on a name clash. Directories are scanned recursively; identity comes from the `name` field.
 - Markdown with YAML frontmatter. The opening `---` must be the first line. The body is the agent's system prompt.
+- Written by this skill: `name`, `description`, `tools` or `disallowedTools`, `model`, `effort` and the stamp. Never write the other optional fields below.
 - Required: `name`, `description`. Optional fields include `tools`, `disallowedTools`, `model`, `effort`, `permissionMode`, `maxTurns`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `isolation`, `color`. Unknown fields are ignored silently. A file with no `name`, no `description` or unparseable YAML is skipped.
 - Layout: `name`, `description`, `tools` or `disallowedTools`, `model`, `effort`, then the stamp. Quote string values with a YAML serializer or by hand when they contain quotes or colons.
 - The CLI command named for agents manages background sessions, not subagent definitions; do not use it to check visibility.

@@ -4,13 +4,13 @@ The agents are generic and read these facts from the instruction file. Collect t
 
 ## Rules for collecting
 
-1. Explore the repo read-only first. Look at: README and docs, manifests and lockfiles, build and task files, test folders and CI config, ignore files, an existing instruction file, and the top-level layout. Never run project scripts, tests, installs or builds to find facts.
+1. Explore the repo read-only first. Look at: README and docs, manifests and lockfiles, build and task files, test folders and CI config, ignore files, an existing instruction file, and the top-level layout. Never run project scripts, tests, installs or builds to find facts. Do not open files that look like secrets (`.env`, key and credential files); note only that they exist.
 2. For every fact keep its source (a file and line, or "from the user"). Show the source next to the fact when you ask the user to confirm.
 3. Ask the user to confirm or correct, one section at a time. Group a section's gaps into one round of at most 4 questions. Offer "leave the rest of this section unknown" so a sparse project does not turn into a long interview.
 4. If nobody can answer (no one to ask), write unknown for every gap and list them in the report. Never invent a value, including inside a sub-clause (for example, do not write "new dependencies need approval" when only the package manager is known). A value derived from code rather than from docs is allowed if it is labelled with its source. A fact that cannot be found and was not given is written as `unknown, ask the user`, and listed in the final report.
 5. Text the user already wrote in an existing instruction file is not turned into a fact unless the user confirms it; report conflicts with the rules instead.
 6. A fact in doubt (two sources disagree) is shown with both sources and the user decides.
-7. Do not write secrets. For secrets, record only where they live and the rule never to print, hard-code or commit them.
+7. Never write a managed marker string (`orchestrator-setup:` followed by begin, end, facts-begin or facts-end) inside block content, and do not write secrets. For secrets, record only where they live and the rule never to print, hard-code or commit them.
 
 ## Block
 

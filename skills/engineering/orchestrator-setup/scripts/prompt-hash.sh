@@ -18,9 +18,16 @@ normalise() {
     }'
 }
 
+ROLE_FILE=""
 if [ "${1:-}" = "--role" ]; then
-  f="$HERE/references/roles/${2:?role name}.md"
-  [ -f "$f" ] || { echo "no such role: $2" >&2; exit 1; }
+  role="${2:?role name}"
+  case "$role" in *[!a-z0-9-]*|"") echo "invalid role name" >&2; exit 1;; esac
+  ROLE_FILE="$HERE/references/roles/$role.md"
+  [ -f "$ROLE_FILE" ] || { echo "no such role: $role" >&2; exit 1; }
+fi
+
+if [ -n "$ROLE_FILE" ]; then
+  f="$ROLE_FILE"
   awk 'f{print} /^## Prompt$/{f=1}' "$f" | normalise
 else
   normalise
