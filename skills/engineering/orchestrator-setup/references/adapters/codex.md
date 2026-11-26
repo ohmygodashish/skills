@@ -12,6 +12,7 @@ Follow `checklist.md`. Last verified: 2026-11-26. The sections marked last-known
 
 ### Agent files (items 1, 2)
 - Project: `.codex/agents/<name>.toml`. User: `~/.codex/agents/<name>.toml`. One agent per file. The `name` field is the source of truth; keep the file name equal to it.
+- Written by this skill: `name`, `description`, `model`, `model_reasoning_effort`, `developer_instructions` and the stamp. Never write the `features.*` or `skills.*` keys, sandbox or approval settings.
 - TOML. Required: `name`, `description`, `developer_instructions`. Optional: `model`, `model_reasoning_effort`, and some `features.*` and `skills.*` keys (summary).
 - A custom agent with the same name as a built-in one overrides the built-in. If a chosen role name is `explorer`, tell the user it replaces the built-in of that name.
 - Layout: stamp comment on line 1, then `name`, `description`, `model`, `model_reasoning_effort`, `developer_instructions`. Write strings with a TOML serializer or escape double quotes and backslashes by hand. Omit `model` when the role inherits.

@@ -20,4 +20,4 @@ You invoke this by typing `/orchestrator-setup`. It does not run on its own.
 
 ## Underlying Specification
 
-The full prompt specification and agent execution rules are maintained at [`skills/engineering/orchestrator-setup/SKILL.md`](../../skills/engineering/orchestrator-setup/SKILL.md). The design decisions behind it are in [`orchestrator-setup-design-decisions.md`](./orchestrator-setup-design-decisions.md).
+The full prompt specification and agent execution rules are maintained at [`skills/engineering/orchestrator-setup/SKILL.md`](../../skills/engineering/orchestrator-setup/SKILL.md).
