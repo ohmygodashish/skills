@@ -1,0 +1,6 @@
+[project]
+name = "tally"
+description = "Sum numbers from a file"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

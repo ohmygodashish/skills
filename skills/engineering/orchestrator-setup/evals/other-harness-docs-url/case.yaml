@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: other-harness-docs-url
+expected_outcome: |
+  With a docs file for an unknown harness, the skill follows the checklist, writes agents in the documented JSON format and location, writes its rules into the documented instruction file, drafts one file first, and reports the setup as less verified.
+context:
+  scaffold_script: place-files.sh

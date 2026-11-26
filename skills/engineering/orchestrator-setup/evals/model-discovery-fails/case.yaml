@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: model-discovery-fails
+expected_outcome: |
+  When listing, docs and the user's answer all fail to produce model values, the skill never writes a remembered name; it offers inherit or omission, warns that the adapter was not re-verified, and reports honestly.
+context:
+  scaffold_script: place-files.sh

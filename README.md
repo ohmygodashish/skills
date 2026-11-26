@@ -64,6 +64,7 @@ The script only ever replaces symlinks. If a destination entry is a real directo
 | :--- | :--- | :--- | :--- |
 | **`create-specification`** | Generate comprehensive technical software specifications and system design docs | [`docs`](./docs/engineering/create-specification.md) | [`SKILL.md`](./skills/engineering/create-specification/SKILL.md) |
 | **`handoff`** | Compact current session into structured `.agents/handoff/<theme>-handoff.md` with kickstart prompts | [`docs`](./docs/engineering/handoff.md) | [`SKILL.md`](./skills/engineering/handoff/SKILL.md) |
+| **`orchestrator-setup`** | Set up an orchestrator plus subagents workflow for Claude Code, Codex or another harness | [`docs`](./docs/engineering/orchestrator-setup.md) | [`SKILL.md`](./skills/engineering/orchestrator-setup/SKILL.md) |
 
 ---
 
