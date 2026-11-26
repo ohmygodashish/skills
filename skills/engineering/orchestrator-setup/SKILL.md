@@ -1,7 +1,7 @@
 ---
 name: orchestrator-setup
 description: Set up, update or check an orchestrator plus subagents workflow in a project, for Claude Code, Codex or another harness. Writes agent files and orchestrator rules into the project's instruction file. Run only when the user explicitly asks to set up, update or check an orchestrator or subagent workflow.
-argument-hint: "[update-models | roles | resync | status]"
+argument-hint: "[update-models | status]"
 disable-model-invocation: true
 ---
 
@@ -26,7 +26,7 @@ Run this only when the user explicitly asked for it. If you were loaded without 
 
 ## Flow
 
-1. **Preflight.** Identify the harness you are running in (the target harness the user names may differ). Look for an existing setup (stamps and markers, see `references/update-modes.md`). If one exists, show its status table and offer the modes: update models only, add or remove roles, resync role prompts, status. Use the argument if one was given. For a mode, follow `update-modes.md`, which says which steps below run, which are skipped, and the default action per file.
+1. **Preflight.** Identify the harness you are running in (the target harness the user names may differ). Look for an existing setup (stamps and markers, see `references/update-modes.md`). If one exists, show its status table and offer the modes: update models only, status, or running normal setup again (it shows a diff per existing file; an existing agent file that differs defaults to skip). Use the argument if one was given. For a mode, follow `update-modes.md`, which says which steps below run, which are skipped, and the default action per file. Changing roles or refreshing prompts means running normal setup again.
 2. **Round A: basics.** Ask: target harness (and docs URL if it is not one with an adapter); scope of the generated agents (project, recommended, or user-level); strictness (strict, recommended, or trivial edits allowed); git handling (local only through the exclude file, recommended, or shared). Defaults are in `references/orchestrator-template.md` and `references/project-facts-template.md`.
 3. **Roles.** Show `references/catalog.md` with its defaults: core roles on, data-qa suggested only if the repo shows derived data, all others opt-in. Offer custom roles (collect and draft as `catalog.md` says, then get approval).
 4. **Adapter check.** Read the adapter for the target (`references/adapters/`). Verify it against the harness's current docs, following `references/adapters/checklist.md`. Report differences before continuing. If the harness cannot restrict tools, say so plainly now, before any file is written. If docs cannot be fetched, use the adapter's last-known section and warn the user clearly.
@@ -43,7 +43,7 @@ Run this only when the user explicitly asked for it. If you were loaded without 
 - Orchestrator rules: `references/orchestrator-template.md`.
 - Project facts: `references/project-facts-template.md`.
 - Models: `references/model-discovery.md`.
-- Stamp and update modes: `references/update-modes.md`. Hashes come only from `scripts/prompt-hash.sh`.
+- Stamp and update modes: `references/update-modes.md`.
 - Verification: `references/verification.md`.
 - Harness adapters: `references/adapters/checklist.md`, `claude-code.md`, `codex.md`, `other.md`.
 - Maintainer tools: `scripts/check-stale.sh`, `evals/`.

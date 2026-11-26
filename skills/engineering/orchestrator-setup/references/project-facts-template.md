@@ -1,6 +1,6 @@
 # Project facts template
 
-The agents are generic and read these facts from the instruction file. Collect them as below, then write them inside a second managed block, separate from the orchestrator rules so that a resync of the rules never overwrites them.
+The agents are generic and read these facts from the instruction file. Collect them as below, then write them inside a second managed block, separate from the orchestrator rules so that running setup again on the rules never overwrites them.
 
 ## Rules for collecting
 
@@ -47,7 +47,7 @@ The agents are generic and read these facts from the instruction file. Collect t
 <!-- orchestrator-setup:facts-end -->
 ```
 
-The facts block has no hash: users are expected to edit it. A later run reads it, offers to fill any `unknown` entries, and never replaces confirmed values without a diff and an answer.
+The facts block carries a date only: users are expected to edit it. A later run reads it, offers to fill any `unknown` entries, and never replaces confirmed values without a diff and an answer.
 
 ## Commit rules
 

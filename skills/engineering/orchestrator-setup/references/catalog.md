@@ -39,18 +39,6 @@ Default: `on` is pre-ticked, `suggest` is offered only when exploration finds a 
 | verifier | on | strongest | high | read-only | always |
 | security-auditor | on | strongest | high | read-only | always |
 | data-qa | suggest | strongest | medium | read-only | derived data, feature or label code, fixtures, model outputs |
-| planner | opt-in | strongest | high | read-only | |
-| test-writer | opt-in | balanced | high | scoped-write (test files) | a test suite exists |
-| code-reviewer | opt-in | strongest | medium | read-only | |
-| debugger | opt-in | strongest | high | read-only | |
-| docs-writer | opt-in | balanced | medium | scoped-write (docs and doc comments) | docs folder or README beyond a stub |
-| dependency-manager | opt-in | balanced | high | scoped-write (manifests, lockfiles) | a package manifest exists |
-| performance-profiler | opt-in | strongest | high | read-only | benchmark files or profiling config |
-| ci-release | opt-in | balanced | medium | scoped-write (CI, build, release files) | CI config exists |
-| ui-tester | opt-in | balanced | medium | read-only | a web, mobile or desktop UI exists |
-| migration-guardian | opt-in | strongest | high | read-only | migration folder or database schema files |
-
-`debugger` and `performance-profiler` may run commands and use scratch copies. Their prompts forbid changing tracked files.
 
 ## Orchestrator rows
 
@@ -58,4 +46,6 @@ Each role's row in the orchestrator rules is in `orchestrator-template.md`.
 
 ## Custom roles
 
-During setup the user may add roles. For each one collect: a name matching `^[a-z][a-z0-9-]{0,40}$` (no slashes, dots or spaces; reject a name that is already used by another agent file unless the user says replace), one-line purpose, tier, effort, access class and any hard limits. Draft the description and prompt in the same style as the roles above (generic, reads the instruction file first, states its limits, says what to report, treats an unknown fact as a gap). Show the draft and wait for approval. A custom role is stored in the generated agent file only, and carries a stamp with `custom` in place of a catalog hash. Update modes never resync custom roles from the catalog.
+Custom roles are the way to add any role not listed here. They follow the same prompt pattern as the catalog roles: generic, read the project's instruction file first, state hard limits, say what to report, and treat an unknown fact as a gap to report rather than guess.
+
+During setup the user may add roles. For each one collect: a name matching `^[a-z][a-z0-9-]{0,40}$` (no slashes, dots or spaces; reject a name that is already used by another agent file unless the user says replace), one-line purpose, tier, effort, access class and any hard limits. Draft the description and prompt, show the draft and wait for approval. A custom role is stored in the generated agent file only, and carries a stamp with `custom` in place of a catalog date. Add a row for it to the orchestrator table: when to use it and the one rule that matters.
