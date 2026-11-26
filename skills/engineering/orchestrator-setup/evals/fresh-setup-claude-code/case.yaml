@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: fresh-setup-claude-code
+expected_outcome: |
+  Core roles (explorer, implementer, verifier, security-auditor) exist as Claude Code agent files with stamps; read-only roles have write and edit tools denied; the orchestrator block and facts block are in the instruction file; the report is honest about what was verified.
+context:
+  scaffold_script: place-files.sh

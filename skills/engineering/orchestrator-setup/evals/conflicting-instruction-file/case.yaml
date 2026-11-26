@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: conflicting-instruction-file
+expected_outcome: |
+  An existing CLAUDE.md with a hand-written Orchestrator heading and an unstamped explorer agent are never overwritten: diffs are shown, the user's text survives, the managed block is added without duplicating the heading, and the unstamped agent is skipped as chosen.
+context:
+  scaffold_script: place-files.sh

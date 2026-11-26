@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: harness-cannot-restrict-tools
+expected_outcome: |
+  For a harness with no per-agent tool restriction, the skill says so plainly before writing, keeps the no-write rule in each read-only role prompt, marks every restricted role advisory in the report, and does not invent a tools field.
+context:
+  scaffold_script: place-files.sh

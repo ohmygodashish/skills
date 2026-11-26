@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: fresh-setup-codex
+expected_outcome: |
+  Core roles exist as Codex TOML agent files; AGENTS.md holds the rules; the report says read-only roles are advisory only because the harness cannot restrict tools per agent.
+context:
+  scaffold_script: place-files.sh
